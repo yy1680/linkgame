@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Keyboard xmlns:android="http://schemas.android.com/apk/res/android"
+          android:keyHeight="10%p"
+          android:keyWidth="25%p">
+    <Row>
+        <Key
+            android:codes="159"
+            android:keyEdgeFlags="left"
+            android:keyLabel="@string/k159"/>
+
+        <Key
+            android:codes="308"
+            android:keyLabel="@string/k308"/>
+        <Key
+            android:codes="136"
+            android:keyLabel="@string/k136"/>
+        <Key
+            android:codes="1"
+            android:keyEdgeFlags="right"
+            android:keyLabel="@string/k1"/>
+    </Row>
+    <Row>
+        <Key
+            android:codes="2"
+            android:keyEdgeFlags="left"
+            android:keyLabel="@string/k2"/>
+
+        <Key
+            android:codes="3"
+            android:keyLabel="@string/k3"/>
+        <Key
+            android:codes="4"
+            android:keyLabel="@string/k4"/>
+        <Key
+            android:codes="5"
+            android:keyEdgeFlags="right"
+            android:keyLabel="@string/k5"/>
+    </Row>
+    <Row>
+        <Key
+            android:codes="6"
+            android:keyEdgeFlags="left"
+            android:keyLabel="@string/k6"/>
+
+        <Key
+            android:codes="7"
+            android:keyLabel="@string/k7"/>
+        <Key
+            android:codes="100"
+            android:keyLabel="@string/code1"/>
+        <Key
+            android:codes="200"
+            android:keyEdgeFlags="right"
+            android:keyLabel="@string/code2"/>
+    </Row>
+    <Row>
+        <Key
+            android:codes="-5"
+            android:keyEdgeFlags="left"
+            android:keyLabel="@string/key_cancel"/>
+    </Row>
+</Keyboard>
