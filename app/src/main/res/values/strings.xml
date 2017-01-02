@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">MyLink</string>
+
+    <string name="title_activity_main">MainActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+
+    <string name="title_activity_start_page">连连看</string>
+    <string name="title_startpage">连连看</string>
+    <string name="input_label">mIME</string>
+    <string name="k159">159</string>
+    <string name="k308">308</string>
+    <string name="k136">136</string>
+    <string name="k1">1</string>
+    <string name="k2">2</string>
+    <string name="k3">3</string>
+    <string name="k4">4</string>
+    <string name="k5">5</string>
+    <string name="k6">6</string>
+    <string name="k7">7</string>
+    <string name="code1">pwd1</string>
+    <string name="code2">pwd2</string>
+    <string name="key_cancel">cancel</string>
+</resources>
