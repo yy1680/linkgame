@@ -5,28 +5,57 @@
               android:layout_height="fill_parent"
               android:background="@drawable/bg"
               android:orientation="vertical"
+              android:weightSum="10"
               tools:context="com.jiaxin.mylink.MainActivity"
     >
     <com.jiaxin.mylink.LinkPanel
         android:id="@+id/panel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="9"
+        android:layout_weight="8"
         android:gravity="center"
-        android:horizontalSpacing="0dp"
-        android:numColumns="auto_fit"
-        android:verticalSpacing="0dp">
+        android:numColumns="auto_fit">
     </com.jiaxin.mylink.LinkPanel>
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
-        android:layout_weight="1"
+        android:layout_weight="2"
         >
+        <RelativeLayout
+            android:id="@+id/tools"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/base"
+                android:layout_width="1dp"
+                android:layout_height="40dp"
+                android:layout_centerInParent="true"/>
+            <ImageView
+                android:id="@+id/iv_refresh"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginRight="30dp"
+                android:layout_toLeftOf="@id/base"
+                android:scaleType="fitXY"
+                android:src="@drawable/selector_refresh"
+                android:visibility="gone"
+                />
+            <ImageView
+                android:id="@+id/iv_tips"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginLeft="30dp"
+                android:layout_toRightOf="@id/base"
+                android:scaleType="fitXY"
+                android:src="@drawable/selector_light"
+                android:visibility="gone"/>
+        </RelativeLayout>
         <com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar
             android:id="@+id/pb_time"
             android:layout_width="match_parent"
             android:layout_height="40dp"
+            android:layout_below="@id/tools"
+            android:layout_marginTop="5dp"
             android:visibility="gone"
             app:rcBackgroundColor="@color/round_corner_progress_bar_background_default"
             app:rcProgressColor="@color/rcProgressBarColor"
@@ -37,9 +66,10 @@
             android:id="@+id/tv_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignTop="@id/pb_time"
             android:layout_centerInParent="true"
             android:layout_marginLeft="20dp"
-            android:textSize="20sp"/>
+            android:textSize="30sp"/>
         <ImageView
             android:id="@+id/iv_gameresult"
             android:layout_width="match_parent"

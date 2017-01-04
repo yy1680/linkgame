@@ -9,7 +9,7 @@ import java.util.Random;
 
 public class LinkMap {
     int[][] map;
-    int count;
+    int totalNum;
     int row;
     int col;
     int pairs;
@@ -18,7 +18,7 @@ public class LinkMap {
         row = r;
         col = c;
         map = new int[row][col];
-        count = row * col;
+        totalNum = row * col;
         pairs = p;
         int tem = 0;
         for (int i = 0; i < row; i++) {
@@ -36,23 +36,16 @@ public class LinkMap {
 
     public int[][] swap(int[][] src) {
         Random random = new Random(System.currentTimeMillis());
-        int rows = src.length;
-        int col = src[0].length;
-        int size = rows * col;
-
-        for (int i = 0; i < 2 * size; i++) {
-            int firstUnit = random.nextInt(size);
-            int secUnit = random.nextInt(size);
-            if (firstUnit > this.count || secUnit > this.count) {
-                continue;
-            }
-            int[] xy1 = positionToXY(firstUnit);
-            int[] xy2 = positionToXY(secUnit);
-            int x1 = xy1[0];
-            int y1 = xy1[1];
-            int x2 = xy2[0];
-            int y2 = xy2[1];
+        for (int i = 0; i < 2 * totalNum; i++) {
+            int firstUnit = i >= totalNum ? i - totalNum : i;
+            int secUnit = random.nextInt(totalNum);
             if (firstUnit != secUnit) {
+                int[] xy1 = positionToXY(firstUnit);
+                int[] xy2 = positionToXY(secUnit);
+                int x1 = xy1[0];
+                int y1 = xy1[1];
+                int x2 = xy2[0];
+                int y2 = xy2[1];
                 if (src[x1][y1] == -2 || src[x2][y2] == -2) {
                     continue;
                 }

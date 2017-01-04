@@ -13,7 +13,7 @@ public class Contant {
     /*
     * 限制游戏时间，单位秒
     * */
-    public static final int LIMITTIME = 600;
+    public static final int LIMITTIME = 120;
     /*
     * 配置连连看行、列数,实际显示为行列数各自减去2
     * */

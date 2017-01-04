@@ -6,13 +6,14 @@ import java.util.List;
 /**
  * Created by jiaxin on 2016/10/17.
  * 连连游戏逻辑，包括消去逻辑，胜利条件检查
+ * x代表第几行，y代表第几列
  */
 
 public class LinkGame {
-    LinkMap linkMap;
     public final int pairs = Contant.DEFAULT_PAIRS;
     public final int row = Contant.ROW;
     public final int col = Contant.COL;
+    LinkMap linkMap;
     int[][] map;
     int left;
 

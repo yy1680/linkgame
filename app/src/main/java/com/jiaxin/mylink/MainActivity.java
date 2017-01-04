@@ -49,37 +49,14 @@ public class MainActivity extends Activity {
     int height = 0;
     LinkService myController;
     //Todo 重构
-    Handler handler = new Handler() {
-        WeakReference<Activity> activity;
+    Handler handler = new LinkHandler(this);
 
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            switch (msg.what) {
-                //读取到画板实际大小后，根据大小初始化格子
-                case 1:
-                    initImageView();
-                    panel.setNumColumns(game.col);
-                    myGridViewAdapter = new MyAdapter(MainActivity.this);
-                    panel.setHorizontalSpacing(10);
-                    panel.setVerticalSpacing(10);
-                    panel.setAdapter(myGridViewAdapter);
-                    myGridViewAdapter.notifyDataSetChanged();
-                    //开始游戏，初始化计时器
-                    initTimer();
-                    break;
-                //更新计时器状态
-                default:
-                    int time = msg.arg1;
-                    pb_time.setProgress(time);
-                    tv_time.setText(getTimeToShow(time));
-                    if (time == 0) {
-                        myController.onGameOver();
-                    }
-                    break;
-            }
-        }
-    };
+    //声音相关
+    MusicPlayer mMusicPlayer;
+
+    //重排画面及提示按钮
+    ImageView refresh;
+    ImageView tips;
     Runnable delayLoadImage = new Runnable() {
         @Override
         public void run() {
@@ -124,9 +101,9 @@ public class MainActivity extends Activity {
         myController = new LinkServiceImpl();
 
         //读取连连格子图片
-        int lenth = Contant.PICTURES.length;
-        unSelectedPics = new Bitmap[lenth];
-        for (int i = 0; i < lenth; i++) {
+        int length = Contant.PICTURES.length;
+        unSelectedPics = new Bitmap[length];
+        for (int i = 0; i < length; i++) {
             unSelectedPics[i] = BitmapFactory.decodeResource(getResources(),
                     Contant.PICTURES[i]);
         }
@@ -146,9 +123,27 @@ public class MainActivity extends Activity {
             }
         });
 
+        //声音
+        mMusicPlayer = new MusicPlayer(this);
+
+        //功能按钮
+        refresh = (ImageView) findViewById(R.id.iv_refresh);
+        refresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                rearrange();
+            }
+        });
+        tips = (ImageView) findViewById(R.id.iv_tips);
+        tips.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tips();
+            }
+        });
     }
 
-    private void initImageView() {
+    public void initImageView() {
         //获得格子数目
         int count = game.row * game.col;
         mImageViews = new ImageView[count];
@@ -194,6 +189,18 @@ public class MainActivity extends Activity {
         super.onSaveInstanceState(outState);
     }
 
+    @Override
+    protected void onResume() {
+        mMusicPlayer.playBackGroundMusic();
+        super.onResume();
+    }
+
+    @Override
+    protected void onStop() {
+        mMusicPlayer.stopBackGroundMusic();
+        super.onStop();
+    }
+
     public void gameResultZoomIn() {
         PropertyValuesHolder scaleX = PropertyValuesHolder.ofFloat("scaleX", 0f, 1f);
         PropertyValuesHolder scaleY = PropertyValuesHolder.ofFloat("scaleY", 0f, 1f);
@@ -227,6 +234,78 @@ public class MainActivity extends Activity {
         pb_time.setVisibility(View.VISIBLE);
         tv_time.setVisibility(View.VISIBLE);
         myGridViewAdapter.notifyDataSetChanged();
+    }
+
+    private void onPanelWidthGot() {
+        initImageView();
+        panel.setNumColumns(game.col);
+        myGridViewAdapter = new MyAdapter(MainActivity.this);
+        panel.setHorizontalSpacing(10);
+        panel.setVerticalSpacing(10);
+        panel.setAdapter(myGridViewAdapter);
+        myGridViewAdapter.notifyDataSetChanged();
+        //开始游戏，初始化计时器
+        initTimer();
+        //放音乐
+        mMusicPlayer.playBackGroundMusic();
+        //显示功能按钮图片
+        refresh.setVisibility(View.VISIBLE);
+        tips.setVisibility(View.VISIBLE);
+    }
+
+    private void updateTime(int time) {
+        pb_time.setProgress(time);
+        tv_time.setText(getTimeToShow(time));
+        if (time == 0) {
+            myController.onGameOver();
+        }
+    }
+
+    //重排当前格子
+    private void rearrange() {
+        game.linkMap.swap(game.map);
+        for (ImageView view :
+                mImageViews) {
+            view.setVisibility(View.VISIBLE);
+        }
+        clearImageState();
+        ((BaseAdapter) panel.getAdapter()).notifyDataSetChanged();
+    }
+
+    private void clearImageState() {
+        int pos = ((LinkServiceImpl) myController).chosenPos;
+        if (pos != -1) {
+            myController.changeImageState(Contant.SELECTED, pos);
+        }
+    }
+
+    //提示
+    private void tips() {
+
+    }
+
+    private static class LinkHandler extends Handler {
+        WeakReference<MainActivity> activity;
+
+        public LinkHandler(MainActivity activity) {
+            this.activity = new WeakReference<MainActivity>(activity);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                //读取到画板实际大小后，根据大小初始化格子
+                case 1:
+                    activity.get().onPanelWidthGot();
+                    break;
+                //更新计时器状态
+                default:
+                    int time = msg.arg1;
+                    activity.get().updateTime(time);
+                    break;
+            }
+        }
     }
 
     class MyAdapter extends BaseAdapter {
@@ -266,6 +345,7 @@ public class MainActivity extends Activity {
 
     class LinkServiceImpl implements LinkService {
 
+        public int chosenPos = -1;
         PropertyValuesHolder scaleX = PropertyValuesHolder.ofFloat("scaleX", 1f, 1.2f);
         PropertyValuesHolder scaleY = PropertyValuesHolder.ofFloat("scaleY", 1f, 1.2f);
         PropertyValuesHolder rescaleX = PropertyValuesHolder.ofFloat("scaleX", 1.2f, 1f);
@@ -273,21 +353,19 @@ public class MainActivity extends Activity {
         ObjectAnimator animator;
         int chosenX = -1;
         int chosenY = -1;
-        int chosenPos = -1;
 
         @Override
         public void changeImageState(int curState, int pos) {
-            int num = game.linkMap.get(pos);
             if (Contant.SELECTED == curState) {
                 animator = ObjectAnimator.ofPropertyValuesHolder(mImageViews[pos],
                         rescaleX, rescaleY);
-                animator.setDuration(30);
+                animator.setDuration(0);
                 animator.start();
 
             } else if (Contant.UNSELECTED == curState) {
                 animator = ObjectAnimator.ofPropertyValuesHolder(mImageViews[pos],
                         scaleX, scaleY);
-                animator.setDuration(30);
+                animator.setDuration(0);
                 animator.start();
             }
 
@@ -296,6 +374,7 @@ public class MainActivity extends Activity {
         @Override
         public void doChose(int position) {
             if (chosenPos > -1) {
+                changeImageState(Contant.SELECTED, chosenPos);
                 int[] xy = game.linkMap.positionToXY(position);
                 int curX = xy[0];
                 int curY = xy[1];
@@ -304,6 +383,7 @@ public class MainActivity extends Activity {
                     List<int[]> points = game.judge(chosenX, chosenY, curX, curY);
                     if (points != null) {
                         drawLinesByPoints(points);
+                        mMusicPlayer.playSoundEffect();
                         game.remove(chosenX, chosenY, curX, curY);
                         remove(chosenPos, position);
                         panel.postInvalidate();
@@ -321,13 +401,11 @@ public class MainActivity extends Activity {
                 chosenX = xy[0];
                 chosenY = xy[1];
                 chosenPos = position;
-
                 changeImageState(Contant.UNSELECTED, position);
             }
         }
 
         void unChose() {
-            changeImageState(Contant.SELECTED, chosenPos);
             chosenX = -1;
             chosenY = -1;
             chosenPos = -1;
@@ -375,6 +453,9 @@ public class MainActivity extends Activity {
             //让进度条计时器消失
             pb_time.setVisibility(View.GONE);
             tv_time.setVisibility(View.GONE);
+            //关掉音乐
+            mMusicPlayer.stopBackGroundMusic();
         }
     }
+
 }
