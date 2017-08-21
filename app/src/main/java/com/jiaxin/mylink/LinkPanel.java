@@ -6,7 +6,11 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AbsListView;
+import android.widget.BaseAdapter;
 import android.widget.GridView;
+import android.widget.ImageView;
 
 import java.util.List;
 
@@ -23,6 +27,13 @@ public class LinkPanel extends GridView {
     private final int row = Contant.ROW;
     private List<int[]> points;
     private int STATE = NOTHING_TO_DRAW;
+    //背景板每一格代表一个ImageView
+    private ImageView[] mImageViews;
+    private LinkGame game;
+
+    public void setLinkGame(LinkGame game){
+        this.game = game;
+    }
 
     public LinkPanel(Context context) {
         super(context);
@@ -76,5 +87,65 @@ public class LinkPanel extends GridView {
                     view2.getX() + hafewidth, view2.getY() + hafeheight, paint);
         }
 
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    }
+    public void initImageView() {
+        //获得格子数目
+        int count = row * col;
+        mImageViews = new ImageView[count];
+        //计算每一个格子的宽和高，初始化每一个ImageView
+        int padding = getPaddingLeft();
+        int width = (1080 - 2 * padding) / 10 - 10;
+        int height = (1500 - 2 * padding) / 12 - 10;
+        for (int i = 0; i < count; i++) {
+            mImageViews[i] = new ImageView(getContext());
+            mImageViews[i].setLayoutParams(new AbsListView.LayoutParams(width, height));
+            mImageViews[i].setScaleType(ImageView.ScaleType.FIT_XY);
+        }
+    }
+    public ImageView getImageView(int num){
+        return this.mImageViews[num];
+    }
+    public ImageView[] getImageViews(){
+        return mImageViews;
+    }
+
+    public class MyAdapter extends BaseAdapter {
+        Context context;
+
+        public MyAdapter(Context context) {
+            this.context = context;
+        }
+
+        @Override
+        public int getCount() {
+            return mImageViews == null ? 0 : mImageViews.length;
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return mImageViews[position];
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return 0;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            ImageView view = mImageViews[position];
+            int num = game.linkMap.get(position);
+            if (num > -1) {
+                view.setImageBitmap(Util.getImage(getResources(),num));
+            } else {
+                view.setVisibility(View.GONE);
+            }
+            return view;
+        }
     }
 }

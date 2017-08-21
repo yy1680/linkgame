@@ -228,6 +228,12 @@ public class LinkGame {
     }
 
     public List<int[]> judge(int x1, int y1, int x2, int y2){
+        if(map[x1][y1] != map[x2][y2]){
+            return null;
+        }
+        if(map[x1][y1] < 0){
+            return null;
+        }
         List<int[]> result;
         result = vertical(x1,y1,x2,y2);
         if (result != null){

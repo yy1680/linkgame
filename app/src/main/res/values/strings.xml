@@ -21,4 +21,9 @@
     <string name="code1">pwd1</string>
     <string name="code2">pwd2</string>
     <string name="key_cancel">cancel</string>
+    <string name="text_btn_restart">重来一局</string>
+    <string name="text_btn_nextround">下一关</string>
+    <string name="text_btn_exit">退出</string>
+    <string name="delete">D</string>
+    <string name="next">N</string>
 </resources>

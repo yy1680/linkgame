@@ -15,7 +15,9 @@ public class StartPageActivity extends Activity {
             public void onClick(View v) {
                 Intent act = new Intent(StartPageActivity.this, MainActivity.class);
                 startActivity(act);
+                finish();
             }
         });
+
     }
 }

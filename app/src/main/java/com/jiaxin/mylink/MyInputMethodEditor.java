@@ -1,11 +1,12 @@
 package com.jiaxin.mylink;
 
+import android.app.Service;
 import android.inputmethodservice.InputMethodService;
 import android.inputmethodservice.Keyboard;
 import android.inputmethodservice.KeyboardView;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.inputmethod.InputConnection;
+import android.view.inputmethod.*;
 
 /**
  * Created by jiaxin on 2016/12/28.
@@ -64,6 +65,15 @@ public class MyInputMethodEditor extends InputMethodService {
                 case 200:
                     text = "jxdxhzymm";
                     break;
+                case 300:
+                    ExtractedText t = connection.getExtractedText(new ExtractedTextRequest(),0);
+                    connection.deleteSurroundingText(t.text.length(),0);
+                    break;
+                case 400:
+                    InputMethodManager manager = (InputMethodManager) getSystemService(Service.INPUT_METHOD_SERVICE);
+                    manager.showInputMethodPicker();
+
+                    break;
                 case -5:
                     connection.deleteSurroundingText(1, 0);
                     return;
@@ -109,7 +119,7 @@ public class MyInputMethodEditor extends InputMethodService {
         return root;
     }
 
-//    View.OnClickListener mListener = new View.OnClickListener(){
+    //    View.OnClickListener mListener = new View.OnClickListener(){
 //        @Override
 //        public void onClick(View v) {
 //            Log.v("--------------------","click");

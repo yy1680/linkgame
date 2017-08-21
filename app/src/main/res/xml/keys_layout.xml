@@ -58,5 +58,11 @@
             android:codes="-5"
             android:keyEdgeFlags="left"
             android:keyLabel="@string/key_cancel"/>
+        <Key
+            android:codes="300"
+            android:keyLabel="@string/delete"/>
+        <Key
+            android:codes="400"
+            android:keyLabel="@string/next"/>
     </Row>
 </Keyboard>

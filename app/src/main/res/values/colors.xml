@@ -6,4 +6,5 @@
     <color name="rcProgressBarColor">#00fbff</color>
     <color name="rcProgressBarSecColor">#0925ff</color>
     <color name="black_overlay">#66000000</color>
+    <color name="dialogBackgroundColor">#ff000000</color>
 </resources>

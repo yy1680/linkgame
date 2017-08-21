@@ -2,15 +2,14 @@ package com.jiaxin.mylink;
 
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
-import android.app.Activity;
-import android.content.Context;
+import android.app.Dialog;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.view.View;
-import android.view.ViewGroup;
+import android.support.v4.app.FragmentActivity;
+import android.util.DisplayMetrics;
+import android.view.*;
 import android.widget.*;
 import com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar;
 
@@ -19,14 +18,13 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class MainActivity extends Activity {
+public class MainActivity extends FragmentActivity {
 
     //游戏背景板，继承GridView
     LinkPanel panel;
-    //背景板每一格代表一个ImageView
-    ImageView[] mImageViews;
+
     //GridView适配器
-    MyAdapter myGridViewAdapter;
+    LinkPanel.MyAdapter myGridViewAdapter;
 
     //游戏中使用的图片资源
     Bitmap[] unSelectedPics;
@@ -44,9 +42,6 @@ public class MainActivity extends Activity {
     //游戏结果
     ImageView gameResult;
 
-    //保存格子的宽和高
-    int width = 0;
-    int height = 0;
     LinkService myController;
     //Todo 重构
     Handler handler = new LinkHandler(this);
@@ -57,22 +52,23 @@ public class MainActivity extends Activity {
     //重排画面及提示按钮
     ImageView refresh;
     ImageView tips;
-    Runnable delayLoadImage = new Runnable() {
-        @Override
-        public void run() {
-            while (width == 0) {
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                width = panel.getWidth();
-            }
-            Message msg = handler.obtainMessage();
-            msg.what = 1;
-            msg.sendToTarget();
-        }
-    };
+
+//    Runnable delayLoadImage = new Runnable() {
+//        @Override
+//        public void run() {
+//            while (width == 0) {
+//                try {
+//                    Thread.sleep(500);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//                width = panel.getWidth();
+//            }
+//            Message msg = handler.obtainMessage();
+//            msg.what = 1;
+//            msg.sendToTarget();
+//        }
+//    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,15 +79,16 @@ public class MainActivity extends Activity {
         //读取上次中断的游戏状态
         resumeGame(savedInstanceState);
         //延迟加载连连看显示板
-        new Thread(delayLoadImage).start();
+        //new Thread(delayLoadImage).start();
     }
 
     private void resumeGame(Bundle savedInstanceState) {
         if (savedInstanceState != null) {
             time = savedInstanceState.getInt("time");
-            width = savedInstanceState.getInt("width");
-            height = savedInstanceState.getInt("height");
+//            width = savedInstanceState.getInt("width");
+//            height = savedInstanceState.getInt("height");
             //// TODO: 2016/12/26 游戏状态map
+
         }
     }
 
@@ -99,20 +96,6 @@ public class MainActivity extends Activity {
         //初始化连连看游戏
         game = new LinkGame();
         myController = new LinkServiceImpl();
-
-        //读取连连格子图片
-        int length = Contant.PICTURES.length;
-        unSelectedPics = new Bitmap[length];
-        for (int i = 0; i < length; i++) {
-            unSelectedPics[i] = BitmapFactory.decodeResource(getResources(),
-                    Contant.PICTURES[i]);
-        }
-        mSelectedPics = new Bitmap[]{
-                BitmapFactory.decodeResource(getResources(), R.drawable.blue_selected),
-                BitmapFactory.decodeResource(getResources(), R.drawable.red_selected),
-                BitmapFactory.decodeResource(getResources(), R.drawable.green_selected),
-                BitmapFactory.decodeResource(getResources(), R.drawable.yellow_selected)
-        };
 
         //初始化连连显示板
         panel = (LinkPanel) findViewById(R.id.panel);
@@ -143,27 +126,13 @@ public class MainActivity extends Activity {
         });
     }
 
-    public void initImageView() {
-        //获得格子数目
-        int count = game.row * game.col;
-        mImageViews = new ImageView[count];
-        //计算每一个格子的宽和高，初始化每一个ImageView
-        int padding = panel.getPaddingLeft();
-        width = (panel.getWidth() - 2 * padding) / 10 - 10;
-        height = (panel.getHeight() - 2 * padding) / 12 - 10;
-        for (int i = 0; i < count; i++) {
-            mImageViews[i] = new ImageView(this);
-            mImageViews[i].setLayoutParams(new AbsListView.LayoutParams(width, height));
-            mImageViews[i].setScaleType(ImageView.ScaleType.FIT_XY);
-        }
-    }
-
     //初始化计时器，包括进度条和倒计时文本
     public void initTimer() {
         pb_time = (RoundCornerProgressBar) findViewById(R.id.pb_time);
         tv_time = (TextView) findViewById(R.id.tv_time);
         time = Contant.LIMITTIME;
         tv_time.setText(getTimeToShow(time));
+        tv_time.setVisibility(View.VISIBLE);
         pb_time.setMax(time);
         pb_time.setVisibility(View.VISIBLE);
         timer = new Timer();
@@ -182,39 +151,43 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putInt("width", width);
-        outState.putInt("height", height);
+//        outState.putInt("width", width);
+//        outState.putInt("height", height);
         outState.putInt("time", time);
-        // TODO: 2016/12/26 游戏状态map
+        // TODO: 游戏状态map
         super.onSaveInstanceState(outState);
     }
 
     @Override
     protected void onResume() {
-        mMusicPlayer.playBackGroundMusic();
         super.onResume();
+        //显示功能按钮图片
+        refresh.setVisibility(View.VISIBLE);
+        tips.setVisibility(View.VISIBLE);
+
+        panel.setNumColumns(game.col);
+        panel.setLinkGame(game);
+        panel.initImageView();
+        myGridViewAdapter = panel.new MyAdapter(MainActivity.this);
+        panel.setHorizontalSpacing(10);
+        panel.setVerticalSpacing(10);
+        panel.setAdapter(myGridViewAdapter);
+        myGridViewAdapter.notifyDataSetChanged();
+        //开始游戏，初始化计时器
+        initTimer();
+        //放音乐
+        mMusicPlayer.playBackGroundMusic();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
     }
 
     @Override
     protected void onStop() {
         mMusicPlayer.stopBackGroundMusic();
         super.onStop();
-    }
-
-    public void gameResultZoomIn() {
-        PropertyValuesHolder scaleX = PropertyValuesHolder.ofFloat("scaleX", 0f, 1f);
-        PropertyValuesHolder scaleY = PropertyValuesHolder.ofFloat("scaleY", 0f, 1f);
-        ObjectAnimator in = ObjectAnimator.ofPropertyValuesHolder(gameResult, scaleX, scaleY);
-        in.setDuration(2000);
-        in.start();
-    }
-
-    public void gameResultZoomOut() {
-        PropertyValuesHolder rescaleX = PropertyValuesHolder.ofFloat("scaleX", 1f, 0f);
-        PropertyValuesHolder rescaleY = PropertyValuesHolder.ofFloat("scaleY", 1f, 0f);
-        ObjectAnimator out = ObjectAnimator.ofPropertyValuesHolder(gameResult, rescaleX, rescaleY);
-        out.setDuration(2000);
-        out.start();
     }
 
     /*
@@ -231,26 +204,16 @@ public class MainActivity extends Activity {
     private void reStart() {
         game = new LinkGame();
         time = Contant.LIMITTIME;
-        pb_time.setVisibility(View.VISIBLE);
-        tv_time.setVisibility(View.VISIBLE);
+        tips.setVisibility(View.VISIBLE);
+        refresh.setVisibility(View.VISIBLE);
+        initTimer();
+        panel.setLinkGame(game);
+        panel.initImageView();
         myGridViewAdapter.notifyDataSetChanged();
     }
 
     private void onPanelWidthGot() {
-        initImageView();
-        panel.setNumColumns(game.col);
-        myGridViewAdapter = new MyAdapter(MainActivity.this);
-        panel.setHorizontalSpacing(10);
-        panel.setVerticalSpacing(10);
-        panel.setAdapter(myGridViewAdapter);
-        myGridViewAdapter.notifyDataSetChanged();
-        //开始游戏，初始化计时器
-        initTimer();
-        //放音乐
-        mMusicPlayer.playBackGroundMusic();
-        //显示功能按钮图片
-        refresh.setVisibility(View.VISIBLE);
-        tips.setVisibility(View.VISIBLE);
+
     }
 
     private void updateTime(int time) {
@@ -264,8 +227,7 @@ public class MainActivity extends Activity {
     //重排当前格子
     private void rearrange() {
         game.linkMap.swap(game.map);
-        for (ImageView view :
-                mImageViews) {
+        for (ImageView view : panel.getImageViews()) {
             view.setVisibility(View.VISIBLE);
         }
         clearImageState();
@@ -281,7 +243,27 @@ public class MainActivity extends Activity {
 
     //提示
     private void tips() {
-
+        int row = game.row;
+        int col = game.col;
+        for(int x1 = 1;x1 < row - 1;x1++){
+            for (int y1 = 1;y1 < col - 1;y1++){
+                for(int x2 = 1;x2 < row - 1;x2++){
+                    for(int y2 = 1;y2 < col - 1;y2++){
+                        if(x1 == x2 && y1 == y2) {
+                            continue;
+                        }
+                        List<int[]> result = game.judge(x1,y1,x2,y2);
+                        if(result != null){
+                            myController.dismissTwoUnit(result,
+                                    Util.PointsToPosition(x1,y1),
+                                    Util.PointsToPosition(x2,y2));
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+        rearrange();
     }
 
     private static class LinkHandler extends Handler {
@@ -308,40 +290,6 @@ public class MainActivity extends Activity {
         }
     }
 
-    class MyAdapter extends BaseAdapter {
-        Context context;
-
-        public MyAdapter(Context context) {
-            this.context = context;
-        }
-
-        @Override
-        public int getCount() {
-            return mImageViews == null ? 0 : mImageViews.length;
-        }
-
-        @Override
-        public Object getItem(int position) {
-            return mImageViews[position];
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return 0;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            ImageView view = mImageViews[position];
-            int num = game.linkMap.get(position);
-            if (num > -1) {
-                view.setImageBitmap(unSelectedPics[num]);
-            } else {
-                view.setVisibility(View.GONE);
-            }
-            return view;
-        }
-    }
 
     class LinkServiceImpl implements LinkService {
 
@@ -357,18 +305,17 @@ public class MainActivity extends Activity {
         @Override
         public void changeImageState(int curState, int pos) {
             if (Contant.SELECTED == curState) {
-                animator = ObjectAnimator.ofPropertyValuesHolder(mImageViews[pos],
-                        rescaleX, rescaleY);
+                animator = ObjectAnimator.ofPropertyValuesHolder(
+                        panel.getImageView(pos),rescaleX, rescaleY);
                 animator.setDuration(0);
                 animator.start();
 
             } else if (Contant.UNSELECTED == curState) {
-                animator = ObjectAnimator.ofPropertyValuesHolder(mImageViews[pos],
-                        scaleX, scaleY);
+                animator = ObjectAnimator.ofPropertyValuesHolder(
+                        panel.getImageView(pos),scaleX, scaleY);
                 animator.setDuration(0);
                 animator.start();
             }
-
         }
 
         @Override
@@ -378,18 +325,10 @@ public class MainActivity extends Activity {
                 int[] xy = game.linkMap.positionToXY(position);
                 int curX = xy[0];
                 int curY = xy[1];
-                if (position != chosenPos &&
-                        game.linkMap.get(position) == game.linkMap.get(chosenPos)) {
+                if (position != chosenPos) {
                     List<int[]> points = game.judge(chosenX, chosenY, curX, curY);
                     if (points != null) {
-                        drawLinesByPoints(points);
-                        mMusicPlayer.playSoundEffect();
-                        game.remove(chosenX, chosenY, curX, curY);
-                        remove(chosenPos, position);
-                        panel.postInvalidate();
-                        if (game.isFinished()) {
-                            onGameOver();
-                        }
+                        dismissTwoUnit(points,chosenPos, position);
                     } else {
                         unChose();
                     }
@@ -419,43 +358,87 @@ public class MainActivity extends Activity {
         }
 
         @Override
-        public void remove(int pos1, int pos2) {
-            mImageViews[pos1].setVisibility(View.GONE);
-            mImageViews[pos2].setVisibility(View.GONE);
+        public void dismissTwoUnit(List<int[]> points,int pos1, int pos2) {
+            //画连接线
+            drawLinesByPoints(points);
+            //放音效
+            mMusicPlayer.playSoundEffect();
+            //从游戏模型中删除两格
+            int[] XY1 = Util.PositionToPoints(pos1);
+            int[] XY2 = Util.PositionToPoints(pos2);
+            game.remove(XY1[0], XY1[1], XY2[0], XY2[1]);
+            //在视图层中删除两格
+            panel.getImageView(pos1).setVisibility(View.GONE);
+            panel.getImageView(pos2).setVisibility(View.GONE);
             chosenX = -1;
             chosenY = -1;
             chosenPos = -1;
+            panel.postInvalidate();
+            if (game.isFinished()) {
+                onGameOver();
+            }
         }
 
         @Override
         public void onGameOver() {
-            gameResult = (ImageView) findViewById(R.id.iv_gameresult);
-            //显示结果图片
-            if (game.isFinished()) {
-                RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) gameResult.getLayoutParams();
-                layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
-                gameResult.setImageBitmap(
-                        BitmapFactory.decodeResource(getResources(), R.drawable.win));
-            } else {
-                gameResult.setImageBitmap(
-                        BitmapFactory.decodeResource(getResources(), R.drawable.fail));
-            }
-            //播放图片动画
-            gameResultZoomIn();
-            gameResult.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    reStart();
-                }
-            });
+            createDialog();
+            mGameResultDialog.show();
+
+            //背景透明代码
+            Window window = mGameResultDialog.getWindow();
+            window.getDecorView().setPadding(0,0,0,0);
+            WindowManager.LayoutParams lp = window.getAttributes();
+            lp.alpha = 0.8f;
+            window.setAttributes(lp);
+
             //取消计时器
             timer.cancel();
-            //让进度条计时器消失
+            //让功能按钮、进度条、计时器消失
+            tips.setVisibility(View.GONE);
+            refresh.setVisibility(View.GONE);
             pb_time.setVisibility(View.GONE);
             tv_time.setVisibility(View.GONE);
-            //关掉音乐
-            mMusicPlayer.stopBackGroundMusic();
+
         }
     }
+    private Dialog mGameResultDialog;
+
+    private void createDialog(){
+        LayoutInflater inflater = LayoutInflater.from(this);
+        View root = inflater.inflate(R.layout.dialog_gameresult,null);
+        DisplayMetrics metrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(metrics.widthPixels,metrics.heightPixels);
+
+        ImageView result = (ImageView) root.findViewById(R.id.iv_gameresult);
+        result.setImageResource(game.isFinished()?
+                R.drawable.win:R.drawable.fail);
+        Button btn_restart = (Button) root.findViewById(R.id.btn_restart);
+        btn_restart.setOnClickListener(dialogListener);
+        Button btn_nextround = (Button) root.findViewById(R.id.btn_nextround);
+        btn_nextround.setOnClickListener(dialogListener);
+        Button btn_exit = (Button) root.findViewById(R.id.btn_exit);
+        btn_exit.setOnClickListener(dialogListener);
+        mGameResultDialog = new Dialog(this,R.style.MyDialog);
+        mGameResultDialog.setContentView(root,params);
+
+    }
+    private View.OnClickListener dialogListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            mGameResultDialog.dismiss();
+            switch (v.getId()){
+                case R.id.btn_restart:
+                    reStart();
+                    break;
+                case R.id.btn_nextround:
+                    reStart();
+                    break;
+                case R.id.btn_exit:
+                    finish();
+                    break;
+            }
+        }
+    };
 
 }

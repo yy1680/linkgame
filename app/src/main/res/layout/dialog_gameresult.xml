@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/dialogBackgroundColor"
+
+    >
+    <ImageView
+        android:id="@+id/iv_gameresult"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:src="@drawable/win"
+        android:alpha="1"/>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/iv_gameresult"
+        android:alpha="1">
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btn_restart"
+            android:text="@string/text_btn_restart"
+            android:layout_toLeftOf="@+id/btn_nextround"
+            android:layout_marginRight="20dp"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btn_nextround"
+            android:text="@string/text_btn_nextround"
+            android:layout_centerHorizontal="true"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btn_exit"
+            android:text="@string/text_btn_exit"
+            android:layout_toRightOf="@id/btn_nextround"
+            android:layout_marginLeft="20dp"/>
+    </RelativeLayout>
+</RelativeLayout>

@@ -14,7 +14,7 @@ public interface LinkService {
 
     public abstract void drawLinesByPoints(List<int[]> points);
 
-    public abstract void remove(int pos1, int pos2);
+    public abstract void dismissTwoUnit(List<int[]> pointsToDraw,int pos1, int pos2);
 
     public abstract void onGameOver();
 }
