@@ -9,13 +9,13 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
+            android:name=".Activity.MainActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_main"
             android:theme="@style/FullscreenTheme">
         </activity>
         <activity
-            android:name=".StartPageActivity"
+            android:name=".Activity.StartPageActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_start_page"
             android:theme="@style/FullscreenTheme">
@@ -25,15 +25,24 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <service android:name=".MyInputMethodEditor"
-                 android:label="@string/input_label"
-                 android:permission="android.permission.BIND_INPUT_METHOD">
+
+        <service
+            android:name=".MyInput.MyInputMethodEditor"
+            android:label="@string/input_label"
+            android:permission="android.permission.BIND_INPUT_METHOD">
             <intent-filter>
-                <action android:name="android.view.InputMethod" />
+                <action android:name="android.view.InputMethod"/>
             </intent-filter>
-            <meta-data android:name="android.view.im"
-                       android:resource="@xml/method"/>
+
+            <meta-data
+                android:name="android.view.im"
+                android:resource="@xml/method"/>
         </service>
+
+        <activity
+            android:name=".Activity.SettingsActivity"
+            android:label="@string/title_activity_settings">
+        </activity>
     </application>
 
 </manifest>

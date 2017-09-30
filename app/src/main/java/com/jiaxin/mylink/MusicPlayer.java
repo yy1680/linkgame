@@ -1,7 +1,9 @@
 package com.jiaxin.mylink;
 
 import android.content.Context;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.media.SoundPool;
 
 /**
  * Created by jiaxin on 2017/1/3.
@@ -36,14 +38,16 @@ public class MusicPlayer {
     }
 
     public void playSoundEffect() {
-        MediaPlayer mediaPlayer = MediaPlayer.create(context, R.raw.dismiss);
-        mediaPlayer.setLooping(false);
-        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-                mp.release();
-            }
-        });
-        mediaPlayer.start();
+        int maxStream = 2;
+        int streamType = AudioManager.STREAM_MUSIC;
+        int srcQulity = 0;
+        SoundPool soundPool = new SoundPool(maxStream,streamType,srcQulity);
+        int sound = soundPool.load(context,R.raw.dismiss,1);
+        int leftVolume = 1;
+        int rightVolume = 1;
+        int priority = 1;
+        int loop = 0;
+        float rate = 1.0f;
+        soundPool.play(sound,leftVolume,rightVolume,priority,loop,rate);
     }
 }

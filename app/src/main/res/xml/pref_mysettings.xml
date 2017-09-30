@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <ListPreference
+        android:key="pref_row"
+        android:title="@string/pref_titile_row"
+        android:dialogTitle="@string/pref_rowCountSelect"
+        android:summary="@string/pref_row_summ"
+        android:defaultValue="10"
+        android:entries="@array/pref_row_entries"
+        android:entryValues="@array/pref_row_values"
+        />
+    <ListPreference
+        android:key="pref_col"
+        android:title="@string/pref_title_col"
+        android:dialogTitle="@string/pref_colCountSelect"
+        android:summary="@string/pref_col_summ"
+        android:defaultValue="8"
+        android:entries="@array/pref_col_entries"
+        android:entryValues="@array/pref_col_values"
+        />
+    <ListPreference
+        android:key="pref_difficulty"
+        android:title="@string/pref_difficulty"
+        android:summary="@string/pref_difficulty_summ"
+        android:dialogTitle="@string/pref_difficultySelect"
+        android:defaultValue="@string/pref_difficulty_easy"
+        android:entries="@array/pref_difficulty_entries"
+        android:entryValues="@array/pref_difficulty_values"
+        />
+</PreferenceScreen>

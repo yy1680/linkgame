@@ -1,5 +1,6 @@
 package com.jiaxin.mylink;
 
+import com.jiaxin.mylink.Model.LinkMap;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

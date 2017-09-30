@@ -1,4 +1,4 @@
-package com.jiaxin.mylink;
+package com.jiaxin.mylink.MyInput;
 
 import android.app.Service;
 import android.inputmethodservice.InputMethodService;
@@ -7,6 +7,7 @@ import android.inputmethodservice.KeyboardView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.*;
+import com.jiaxin.mylink.R;
 
 /**
  * Created by jiaxin on 2016/12/28.

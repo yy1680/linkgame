@@ -6,23 +6,9 @@ package com.jiaxin.mylink;
 
 public class Contant {
     /*
-    * 每个格子按下的状态
-    * */
-    public static final int SELECTED = 1;
-    public static final int UNSELECTED = 2;
-    /*
     * 限制游戏时间，单位秒
     * */
     public static final int LIMITTIME = 120;
-    /*
-    * 配置连连看行、列数,实际显示为行列数各自减去2
-    * */
-    public static final int ROW = 12;
-    public static final int COL = 10;
-    /*
-    * 设置同种图片的数目除以2，即有多少配对，越小难度越大
-    * */
-    public static final int DEFAULT_PAIRS = 4;
     /*
     * 游戏小格子图片
     * */

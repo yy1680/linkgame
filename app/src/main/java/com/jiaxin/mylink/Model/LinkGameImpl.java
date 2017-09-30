@@ -1,31 +1,35 @@
-package com.jiaxin.mylink;
+package com.jiaxin.mylink.Model;
+
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by jiaxin on 2016/10/17.
- * 连连游戏逻辑，包括消去逻辑，胜利条件检查
- * x代表第几行，y代表第几列
+ * x代表行，y代表列
  */
 
-public class LinkGame {
-    public final int pairs = Contant.DEFAULT_PAIRS;
-    public final int row = Contant.ROW;
-    public final int col = Contant.COL;
+public class LinkGameImpl implements LinkGame {
+    private int row ;
+    private int col ;
+    private int pairs;
     LinkMap linkMap;
     int[][] map;
-    int left;
+    int remain;
 
-    public LinkGame(){
-        linkMap = new LinkMap();
-        linkMap.init(row,col, pairs);
-        left = (row - 2) * (col - 2);
-        map = linkMap.map;
+    public LinkGameImpl(Context context){
+        //读preferences配置，+2表示要加上上下左右各一行空行
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+        row = Integer.parseInt(pref.getString("pref_row","10")) + 2;
+        col = Integer.parseInt(pref.getString("pref_col","8")) + 2;
+        int difficulty = Integer.parseInt(pref.getString("pref_difficulty","0"));
+        pairs = (row * col) / (2 *(difficulty + 8));
     }
 
     public boolean isFinished(){
-        return left == 0;
+        return remain == 0;
     }
 
     //判断格子是否为空
@@ -221,17 +225,11 @@ public class LinkGame {
         return null;
     }
 
-    public void remove(int x1, int y1,int x2,int y2){
-        linkMap.map[x1][y1] = -1;
-        linkMap.map[x2][y2] = -1;
-        left -= 2;
-    }
-
     public List<int[]> judge(int x1, int y1, int x2, int y2){
-        if(map[x1][y1] != map[x2][y2]){
+        if(map[x1][y1] < 0 || map[x2][y2] < 0){
             return null;
         }
-        if(map[x1][y1] < 0){
+        if(map[x1][y1] != map[x2][y2]){
             return null;
         }
         List<int[]> result;
@@ -254,4 +252,43 @@ public class LinkGame {
         return null;
     }
 
+    @Override
+    public void createMap() {
+        linkMap = new LinkMap();
+        linkMap.init(row,col, pairs);
+        remain = (row - 2) * (col - 2);
+        map = linkMap.map;
+    }
+
+    @Override
+    public int[][] getMap() {
+        return map;
+    }
+
+    //x是横坐标，代表列
+    //y是纵坐标，代表横
+    @Override
+    public boolean isValid(int x,int y) {
+        if(x >= col || x < 0 || y >= row || y < 0){
+            return false;
+        }
+        return map[y][x] >= 0 ? true : false;
+    }
+
+    @Override
+    public void removePair(int x1, int y1,int x2,int y2){
+        linkMap.map[x1][y1] = -1;
+        linkMap.map[x2][y2] = -1;
+        remain -= 2;
+    }
+
+    @Override
+    public void reArrange() {
+        linkMap.swap(map);
+    }
+
+    @Override
+    public int getRemain() {
+        return remain;
+    }
 }

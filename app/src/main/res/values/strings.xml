@@ -26,4 +26,21 @@
     <string name="text_btn_exit">退出</string>
     <string name="delete">D</string>
     <string name="next">N</string>
+    <string name="title_setting">游戏设置</string>
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- Strings related to Settings -->
+
+    <string name="pref_titile_row">行数量</string>
+    <string name="pref_row_summ">有多少行</string>
+    <string name="pref_col_summ">有多少列</string>
+    <string name="pref_title_col">列数量</string>
+    <string name="pref_difficulty_summ">连连看难度</string>
+    <string name="pref_difficulty">难度</string>
+    <string name="pref_rowCountSelect">选择行数</string>
+    <string name="pref_colCountSelect">选择列数</string>
+    <string name="pref_difficultySelect">选择难度</string>
+    <string name="pref_difficulty_easy">简单</string>
+    <string name="pref_difficulty_normal">普通</string>
+    <string name="pref_difficulty_hard">难</string>
 </resources>

@@ -1,10 +1,9 @@
-package com.jiaxin.mylink;
+package com.jiaxin.mylink.Model;
 
 import java.util.Random;
 
 /**
- * Created by jiaxin on 2016/10/17.
- * 连连看游戏基本数据模型，是一个二维整形数组，正数表示图形编号，-1表示被消去的格子，-2表示空格子
+ * 连连看游戏图，是一个二维整形数组，正数表示图形编号，-1表示被消去的格子，-2表示空格子
  */
 
 public class LinkMap {
@@ -57,19 +56,10 @@ public class LinkMap {
         return src;
     }
 
-    public int get(int pos) {
-        int xy[] = positionToXY(pos);
-        int x = xy[0];
-        int y = xy[1];
-        return map[x][y];
-    }
-
-
     public int[] positionToXY(int pos) {
         int[] xy = new int[2];
         xy[0] = pos / col;
         xy[1] = pos % col;
         return xy;
     }
-
 }

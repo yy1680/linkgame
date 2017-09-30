@@ -6,16 +6,16 @@
               android:background="@drawable/bg"
               android:orientation="vertical"
               android:weightSum="10"
-              tools:context="com.jiaxin.mylink.MainActivity"
+              tools:context="com.jiaxin.mylink.Activity.MainActivity"
     >
-    <com.jiaxin.mylink.LinkPanel
+    <com.jiaxin.mylink.View.LinkPanel
         android:id="@+id/panel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="9"
         android:gravity="center"
         android:numColumns="auto_fit">
-    </com.jiaxin.mylink.LinkPanel>
+    </com.jiaxin.mylink.View.LinkPanel>
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

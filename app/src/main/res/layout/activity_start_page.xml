@@ -4,7 +4,7 @@
               android:layout_height="match_parent"
               android:background="#0099cc"
               android:orientation="vertical"
-              tools:context="com.jiaxin.mylink.StartPageActivity">
+              tools:context="com.jiaxin.mylink.Activity.StartPageActivity">
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -20,5 +20,15 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:background="@drawable/selector_start"/>
+    <Button
+        android:id="@+id/btn_setting"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@android:color/transparent"
+        android:text="@string/title_setting"
+        style="@style/Base.AlertDialog.AppCompat.Light"
+        android:layout_marginTop="20dp"
+        android:textSize="60sp"/>
 
 </LinearLayout>
